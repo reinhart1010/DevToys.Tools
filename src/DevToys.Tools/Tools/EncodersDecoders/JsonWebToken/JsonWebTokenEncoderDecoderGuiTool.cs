@@ -94,12 +94,20 @@ internal sealed partial class JsonWebTokenEncoderDecoderGuiTool : IGuiTool, IDis
                 Cell(
                     JsonWebTokenGridRows.SubContainer,
                     GridColumns.Stretch,
-                    Stack()
-                    .Vertical()
-                    .WithChildren(
-                        DecoderGuiTool.ViewStack,
-                        EncoderGuiTool.ViewStack
-                    )
+                    Grid()
+                        .Rows((GridRow.Settings, Auto))
+                        .Cells(
+                            Cell(
+                                GridRow.Settings,
+                                GridColumns.Stretch,
+                                DecoderGuiTool.ViewGrid
+                            ),
+                            Cell(
+                                GridRow.Settings,
+                                GridColumns.Stretch,
+                                EncoderGuiTool.ViewGrid
+                            )
+                        )
                 )
             )
         );
@@ -120,29 +128,6 @@ internal sealed partial class JsonWebTokenEncoderDecoderGuiTool : IGuiTool, IDis
         LoadChildView();
     }
 
-    private IUIGridCell EncodeDecodeSettings()
-        => Cell(
-            JsonWebTokenGridRows.Settings,
-            GridColumns.Stretch,
-            Stack()
-                .Vertical()
-                .SmallSpacing()
-                .WithChildren(
-                    Label()
-                        .Text(JsonWebTokenEncoderDecoder.ConfigurationTitle),
-                    Setting("jwt-token-conversion-mode-setting")
-                        .Icon("FluentSystemIcons", '\uF18D')
-                        .Title(JsonWebTokenEncoderDecoder.ToolModeTitle)
-                        .Description(JsonWebTokenEncoderDecoder.ToolModeDescription)
-                        .InteractiveElement(
-                            _conversionModeSwitch
-                            .OnText(JsonWebTokenEncoderDecoder.EncodeMode)
-                            .OffText(JsonWebTokenEncoderDecoder.DecodeMode)
-                            .OnToggle(OnConversionModeChanged)
-                        )
-                )
-        );
-
     private void LoadChildView()
     {
         switch (_settingsProvider.GetSetting(toolModeSetting))
@@ -160,5 +145,11 @@ internal sealed partial class JsonWebTokenEncoderDecoderGuiTool : IGuiTool, IDis
             default:
                 throw new NotSupportedException();
         }
+    }
+
+    private enum GridRow
+    {
+        Settings,
+        Results
     }
 }
